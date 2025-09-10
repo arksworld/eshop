@@ -9,7 +9,6 @@
 
 <script>
     $(document).ready(function() {
-    alert('hello');
         // Clear JWT from localStorage
         localStorage.removeItem("jwtToken");
 

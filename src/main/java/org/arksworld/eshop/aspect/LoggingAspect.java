@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingAspect {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(LoggingAspect.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Pointcut("within(com.example.ecommerce.controller..*) || within(com.example.ecommerce.service..*)")
+    @Pointcut("within(org.arksworld.eshop.web.controller.*) || within(org.arksworld.eshop.web.security.*)")
     public void appFlow() {}
 
     @Before("appFlow()")

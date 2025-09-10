@@ -1,4 +1,4 @@
-package org.arksworld.eshop.web.security;
+package org.arksworld.eshop.web.config;
 
 import org.arksworld.eshop.web.filter.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
@@ -26,14 +26,18 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // Allow JSP pages
-                        .requestMatchers("/", "/login","/logout","/WEB-INF/views/**").permitAll()
+                        .requestMatchers("/", "/login","/logout","/auth/logout","/logoutPage","/WEB-INF/views/**").permitAll()
                         // Allow auth APIs
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/index.jsp","/login.jsp","/logout.jsp").permitAll()
                         // Allow static resources (JS, CSS, images)
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         // Everything else requires JWT
                         .anyRequest().authenticated()
                 )
+                .logout(logout -> logout.logoutUrl("/auth/logout")
+                        .logoutSuccessUrl("/logoutPage"))
+//                        /.logoutSuccessHandler((req, res, auth) -> res.setStatus(200)))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
                 //.httpBasic(Customizer.withDefaults()); // basic auth for testing, later replace with JWT filter

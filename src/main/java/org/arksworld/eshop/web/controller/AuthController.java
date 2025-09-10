@@ -32,6 +32,7 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         // If you later implement server-side token blacklist, do it here.
+        System.out.println("Inside Auth controller Logout");
         return ResponseEntity.ok("Logout successful");
     }
 }

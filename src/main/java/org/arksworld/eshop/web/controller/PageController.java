@@ -14,11 +14,13 @@ public class PageController {
 
     @GetMapping("/login")
     public String login() {
+        System.out.println("Page controller: Login");
         return "login";
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/logoutPage")
     public String logout() {
+        System.out.println("Page controller: Logout");
         return "logout";
     }
 }
