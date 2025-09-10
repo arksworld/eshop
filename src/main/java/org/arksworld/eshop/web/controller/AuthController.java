@@ -4,6 +4,7 @@ import org.arksworld.eshop.dto.AuthResponse;
 import org.arksworld.eshop.dto.LoginRequest;
 import org.arksworld.eshop.dto.RegisterRequest;
 import org.arksworld.eshop.web.security.AuthService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,5 +27,11 @@ public class AuthController {
     public AuthResponse login(@RequestBody LoginRequest request) {
         String token = authService.login(request);
         return AuthResponse.builder().token(token).build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        // If you later implement server-side token blacklist, do it here.
+        return ResponseEntity.ok("Logout successful");
     }
 }

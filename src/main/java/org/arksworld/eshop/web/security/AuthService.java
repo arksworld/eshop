@@ -5,9 +5,12 @@ import org.arksworld.eshop.dto.RegisterRequest;
 import org.arksworld.eshop.entities.Role;
 import org.arksworld.eshop.entities.User;
 import org.arksworld.eshop.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
@@ -47,10 +50,22 @@ public class AuthService {
         return jwtUtil.generateToken(user.getUsername());
     }
 
-    public String login(LoginRequest request) {
+   /* public String login(LoginRequest request) {
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
         return jwtUtil.generateToken(request.getUsername());
+    }*/
+
+    public String login(LoginRequest request) {
+        try {
+            authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
+            return jwtUtil.generateToken(request.getUsername());
+        } catch (AuthenticationException ex) {
+            // Translate to a 401 for REST clients/tests
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password", ex);
+        }
     }
 }

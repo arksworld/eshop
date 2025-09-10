@@ -1,5 +1,6 @@
 package org.arksworld.eshop.aspect;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
@@ -11,38 +12,37 @@ import org.springframework.stereotype.Component;
 public class LoggingAspect {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // Pointcut for all controllers
-    @Pointcut("within(org.arksworld.eshop..controller..*)")
-    public void controllerMethods() {}
-
-    // Pointcut for all services
-    @Pointcut("within(org.arksworld.eshop..service..*)")
-    public void serviceMethods() {}
-
-    // Combine both
-    @Pointcut("controllerMethods() || serviceMethods()")
+    @Pointcut("within(com.example.ecommerce.controller..*) || within(com.example.ecommerce.service..*)")
     public void appFlow() {}
 
-    // Before execution
     @Before("appFlow()")
     public void logBefore(JoinPoint joinPoint) {
-        log.info("➡ Entering: {}.{}() with args={}",
-                joinPoint.getSignature().getDeclaringTypeName(),
-                joinPoint.getSignature().getName(),
-                joinPoint.getArgs());
+        try {
+            String argsJson = objectMapper.writeValueAsString(joinPoint.getArgs());
+            log.info("➡ Entering: {}.{}() with args={}",
+                    joinPoint.getSignature().getDeclaringTypeName(),
+                    joinPoint.getSignature().getName(),
+                    argsJson);
+        } catch (Exception e) {
+            log.warn("Could not serialize args for logging", e);
+        }
     }
 
-    // After returning
     @AfterReturning(pointcut = "appFlow()", returning = "result")
     public void logAfterReturning(JoinPoint joinPoint, Object result) {
-        log.info("⬅ Exiting: {}.{}() with result={}",
-                joinPoint.getSignature().getDeclaringTypeName(),
-                joinPoint.getSignature().getName(),
-                result);
+        try {
+            String resultJson = objectMapper.writeValueAsString(result);
+            log.info("⬅ Exiting: {}.{}() with result={}",
+                    joinPoint.getSignature().getDeclaringTypeName(),
+                    joinPoint.getSignature().getName(),
+                    resultJson);
+        } catch (Exception e) {
+            log.warn("Could not serialize result for logging", e);
+        }
     }
 
-    // After throwing exception
     @AfterThrowing(pointcut = "appFlow()", throwing = "ex")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable ex) {
         log.error("❌ Exception in {}.{}() with cause={}",
